@@ -1,0 +1,35 @@
+Estoque
+* Cadastro e remoção de produtos - ok
+* Controle de produtos disponíveis no estoque - ok
+* Inserção de recebimento de produtos
+
+Pedidos
+* Emitir pedido - ok
+* Cadastrar pedido - ok
+* Histórico de Pedidos - ok
+* Consultar pedidos em aberto (não pagos ainda) - ok
+* Emitir documento para pedidos à ser enviado aos clientes
+
+Custos
+* Valores pagos - ok
+* Valores recebidos - ok
+* Lançar recebimento de produto - ok
+* Precificação de produto - ok
+* Custo de compra por produto - ok
+
+Geração de Relatórios
+* Faturamento - ok
+* Faturamento por produto - ok
+* Entradas e saídas - ok
+
+Saldo a receber
+* Clientes que compraram e ainda não pagaram - ok
+* Baixar dívida de cliente - ok
+
+Clientes
+* Cadastrar/modificar clientes - ok
+* Remover clientes - ok
+
+Fornecedores
+* Cadastrar/modificar fornecedor - ok
+* Remover fornecedor - ok
