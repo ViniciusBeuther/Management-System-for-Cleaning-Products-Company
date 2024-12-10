@@ -1,16 +1,16 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const bcrypt = require('bcrypt');
-const pool = require('./config/database');
+const dotenv = require('dotenv').config();
+const cors = require('cors');
 
-// Routes
+// Routes for authentication login/register
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
-dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(cors({ origin: 'http://localhost:5173' }));
 
-app.use('/users', authRoutes);
+app.use('/auth', authRoutes);
 
 // Running server on port 3000
 app.listen(3000, () => {

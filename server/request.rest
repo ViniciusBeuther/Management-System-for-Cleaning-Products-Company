@@ -15,10 +15,10 @@ Content-Type: application/json
 
 ###
 // Request to log-in
-POST http://localhost:3000/users/login
+POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin",
+  "username": "admin3",
   "password": "pass"
 }
