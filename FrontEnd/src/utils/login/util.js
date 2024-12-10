@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL;
+// const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "http://localhost:3000/";
 
 export default class LoginClass{
   // Method to access the API and get the token to be able to access internal/confidential pages
@@ -33,6 +34,9 @@ export default class LoginClass{
 
     return token;
     
-    } catch(error) {console.log(`Username or password incorrect: ` + error)};
+    } catch(error) {
+      alert(`Usuário ou senha incorretos`);
+      return false;
+    };
   }
 };

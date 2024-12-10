@@ -72,6 +72,10 @@ body{
   font-size: 16px;
   @apply roboto-light;
 }
+
+body, html, #root{
+  height: 100%;
+}
 /* Global font */
 .roboto-light {
   font-family: "Roboto", sans-serif;
@@ -81,7 +85,7 @@ body{
 
 /* Global Standard Styles */
 main,nav{
-  @apply max-w-6xl mx-auto overflow-y-hidden;
+  @apply max-w-6xl mx-auto h-full;
 } 
 *{
   padding: 0;

@@ -4,11 +4,13 @@ import React, { useState } from "react";
 const Login = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
+  const [hasError, setHasError] = useState(false);
 
   const handleClick =  () => {
-    alert('Clicked');
     const loginClass = new LoginClass();
-    loginClass.logIn(user, password);
+    if( loginClass.logIn(user, password) ){
+      setHasError(true);
+    } 
   }
 
   return (
@@ -24,7 +26,9 @@ const Login = () => {
               value={user}
               placeholder="Usuário"
               onChange={(ev) => setUser(ev.target.value)}
-              className="border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md"
+              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md
+              ${hasError ? 'border-red-400' : ''}
+              `}
             />
             <label className="block mt-3 font-semibold"> Senha </label>
             <input
@@ -32,8 +36,12 @@ const Login = () => {
               placeholder="Senha"
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className="border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md"
+              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md
+                ${hasError ? 'border-red-400' : ''}
+                `}
+
             />
+            <label hidden={!hasError} htmlFor="incorrect_login" className="text-red-400">Usuário ou senha incorretos.</label>
             <div className="flex justify-between items-baseline">
               <button
                 type="submit"
