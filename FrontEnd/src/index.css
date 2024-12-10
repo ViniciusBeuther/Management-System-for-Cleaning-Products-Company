@@ -69,7 +69,7 @@
 /*Initial Styles*/
 body{
   background-color: #f0f0f0;
-  font-size: 24px;
+  font-size: 16px;
   @apply roboto-light;
 }
 /* Global font */
@@ -81,7 +81,7 @@ body{
 
 /* Global Standard Styles */
 main,nav{
-  @apply max-w-6xl mx-auto;
+  @apply max-w-6xl mx-auto overflow-y-hidden;
 } 
 *{
   padding: 0;

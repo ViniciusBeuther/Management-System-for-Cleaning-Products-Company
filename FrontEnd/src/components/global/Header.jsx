@@ -1,12 +1,12 @@
 import React from "react";
-import logo from "./assets/aionix-solutions-high-resolution-logo-grayscale-transparent-512-black.png";
+import logo from '../../assets/aionix-solutions-high-resolution-logo-grayscale-transparent-512-black.png'
 
-const Header = () => {
+const HeaderComponent = () => {
   return (
-    <header>
+    <header className="flex items-center justify-center">
       <img src={logo} alt="company-logo" />
     </header>
   );
 };
 
-export default Header;
+export default HeaderComponent;
