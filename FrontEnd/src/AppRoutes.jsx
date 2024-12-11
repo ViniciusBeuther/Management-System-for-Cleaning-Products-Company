@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './modules/login/components/Login';
 import Home from './modules/home/Home';
 import ProtectedRoute from './routes/ProtectedRoute';
+import RegisterForm from './modules/productStock/pages/RegisterForm';
 
 const AppRoutes = () => {
   return (
@@ -13,7 +14,7 @@ const AppRoutes = () => {
         <Route path="/home" element={ <ProtectedRoute> <Home /> </ProtectedRoute> } /> 
         
         {/* Routes for storage modules */}
-        <Route path='/products' element={<ProtectedRoute> <p>products</p> </ProtectedRoute>} />
+        <Route path='/products' element={<ProtectedRoute> <RegisterForm /> </ProtectedRoute>} />
         <Route path='/storage' element={<ProtectedRoute> <p>storage</p> </ProtectedRoute>} />
         <Route path='/productReceivingForm' element={<ProtectedRoute> <p>receiving form</p> </ProtectedRoute>} />
       </Routes>

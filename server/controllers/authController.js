@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
   try {
-    // valite the input request
+    // validate the input request
     const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).send('Username and password are required.');
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
     // Compare the password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (passwordMatch) {
-      console.log(process.env.JWT_SECRET)
+      // console.log(process.env.JWT_SECRET)
       const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
       return res.json({ message: 'Success, logged in!', token });
     } else {
