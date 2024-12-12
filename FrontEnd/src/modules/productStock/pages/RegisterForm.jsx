@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import HeaderComponent from "@/components/global/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useForm } from "react-hook-form";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -21,9 +24,31 @@ const RegisterForm = () => {
   const [quantityInStock, setQuantityInStock] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
 
-  // States to control the dialog (modal)
-  const [saveIsOpened, setSaveIsOpened] = useState(true);
-  const [cancelIsOpened, setCancelIsOpened] = useState(false);
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .required("O nome do produto é obrigatório.")
+      .min(5, "O nome do produto deve ter pelo menos 5 caracteres"),
+    description: Yup.string(),
+    quantityInStock: Yup.number()
+      .transform((value) => (isNaN(value) ? undefined : value))
+      .required("A quantidade em estoque é obrigatória.")
+      .min(0, "A quantidade não pode ser negativa.")
+      .integer("A quantidade deve ser um número inteiro"),
+    unitPrice: Yup.number()
+      .transform((value) => (isNaN(value) ? undefined : value))
+      .required("O preço unitário é obrigatório.")
+      .min(0, "O preço não pode ser negativo.")
+      .positive("O preço deve ser maior que zero"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    mode: "onChange",
+  });
 
   const resetStates = () => {
     setName("");
@@ -32,13 +57,8 @@ const RegisterForm = () => {
     setUnitPrice("");
   };
 
-  const submitRequest = (ev) => {
-    ev.preventDefault();
-    console.log("Inserindo: " + name);
-    console.log("Inserindo: " + description);
-    console.log("Inserindo: " + quantityInStock);
-    console.log("Inserindo: " + unitPrice);
-
+  const onSubmit = (data) => {
+    console.log("Dados validados:", data);
     resetStates();
   };
 
@@ -48,7 +68,7 @@ const RegisterForm = () => {
       <h2 className="text-center">Cadastrar novo produto</h2>
       <form
         className="flex items-center justify-center flex-col gap-2"
-        onSubmit={submitRequest}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <p>
           Preencha os dados abaixo para cadastrar um novo produto no estoque:
@@ -59,83 +79,69 @@ const RegisterForm = () => {
             type="text"
             id="productForm_name_input"
             placeholder="Nome do Produto"
-            value={name}
-            onChange={(ev) => setName(ev.target.value)}
+            {...register("name")}
           />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-0">{errors.name.message}</p>
+          )}
 
           <Label htmlFor="productForm_description">Descrição</Label>
           <Input
             type="text"
             id="productForm_description_input"
             placeholder="Descrição do Produto"
-            value={description}
-            onChange={(ev) => setDescription(ev.target.value)}
+            {...register("description")}
           />
+          {errors.description && (
+            <p className="text-red-500 text-sm mt-0">
+              {errors.description.message}
+            </p>
+          )}
 
-          <Label htmlFor="productForm_description">Quantidade em estoque</Label>
+          <Label htmlFor="productForm_quantityInStock">
+            Quantidade em estoque
+          </Label>
           <Input
             type="number"
-            id="productForm_description_input"
+            id="productForm_quantityInStock_input"
             placeholder="Quantidade em estoque"
-            value={quantityInStock}
-            onChange={(ev) => setQuantityInStock(ev.target.value)}
+            {...register("quantityInStock", { valueAsNumber: true })}
           />
+          {errors.quantityInStock && (
+            <p className="text-red-500 text-sm mt-0">
+              {errors.quantityInStock.message}
+            </p>
+          )}
 
           <Label htmlFor="productForm_unitPrice">Preço Unitário (R$)</Label>
           <Input
             type="number"
             id="productForm_unitPrice_input"
             placeholder="Preço Unitário"
-            value={unitPrice}
-            onChange={(ev) => setUnitPrice(ev.target.value)}
+            {...register("unitPrice", { valueAsNumber: true })}
           />
+          {errors.unitPrice && (
+            <p className="text-red-500 text-sm mt-0">
+              {errors.unitPrice.message}
+            </p>
+          )}
         </div>
 
+        {/* Buttons handling */}
         <div className="flex items-center justify-center gap-2 mt-5">
           <Button className="bg-blue-400 hover:bg-blue-500 text-black">
             <Link to={"/home"}>Voltar</Link>
           </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-green-400 hover:bg-green-500 text-black">
-                Salvar
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle>
-                  Tem certeza que deseja cadastrar esse produto?
-                </DialogTitle>
-                <DialogDescription>
-                  Revise as informações antes de finalizar:
-                </DialogDescription>
-                <DialogDescription>Nome do produto: {name}</DialogDescription>
-              </DialogHeader>
-              <div className="flex items-center space-x-2">
-                <div className="grid flex-1 gap-2">
-                  <Label htmlFor="link" className="sr-only">
-                    Link
-                  </Label>
-                  <Input
-                    id="link"
-                    defaultValue="https://ui.shadcn.com/docs/installation"
-                    readOnly
-                  />
-                </div>
-                <Button type="submit" size="sm" className="px-3">
-                  <span className="sr-only">Copy</span>
-                </Button>
-              </div>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Button className="bg-red-400 hover:bg-red-500 text-black">
+
+          <Button
+            type="submit"
+            className="bg-green-400 hover:bg-green-500 text-black"
+          >
+            Salvar
+          </Button>
+          <Button
+            className="bg-red-400 hover:bg-red-500 text-black"
+          >
             Cancelar
           </Button>
         </div>
