@@ -23,7 +23,9 @@ const RegisterForm = () => {
   const [description, setDescription] = useState("");
   const [quantityInStock, setQuantityInStock] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
+  const [cancelDialogIsOpen, setCancelDialogIsOpen] = useState(false);
 
+  // validation for form
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .required("O nome do produto é obrigatório.")
@@ -35,7 +37,9 @@ const RegisterForm = () => {
       .min(0, "A quantidade não pode ser negativa.")
       .integer("A quantidade deve ser um número inteiro"),
     unitPrice: Yup.number()
-      .transform((value) => (isNaN(value) ? undefined : value))
+      .transform((value, originalValue) =>
+        parseFloat(originalValue.replace(",", "."))
+      )
       .required("O preço unitário é obrigatório.")
       .min(0, "O preço não pode ser negativo.")
       .positive("O preço deve ser maior que zero"),
@@ -59,6 +63,11 @@ const RegisterForm = () => {
 
   const onSubmit = (data) => {
     console.log("Dados validados:", data);
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const day = now.getDay();
+    const fullDate = month + '-' + day;
+    console.log("resgistered_at: ", fullDate)
     resetStates();
   };
 
@@ -115,10 +124,10 @@ const RegisterForm = () => {
 
           <Label htmlFor="productForm_unitPrice">Preço Unitário (R$)</Label>
           <Input
-            type="number"
+            type="text"
             id="productForm_unitPrice_input"
             placeholder="Preço Unitário"
-            {...register("unitPrice", { valueAsNumber: true })}
+            {...register("unitPrice")}
           />
           {errors.unitPrice && (
             <p className="text-red-500 text-sm mt-0">
@@ -141,10 +150,35 @@ const RegisterForm = () => {
           </Button>
           <Button
             className="bg-red-400 hover:bg-red-500 text-black"
+            onClick={() => setCancelDialogIsOpen(true)}
           >
             Cancelar
           </Button>
         </div>
+        {/* Dialog to cancel the form */}
+        <Dialog open={cancelDialogIsOpen} onOpenChange={setCancelDialogIsOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Cancelar cadastro</DialogTitle>
+            </DialogHeader>
+            <DialogDescription>
+              Tem certeza que deseja cancelar o cadastro?
+            </DialogDescription>
+            <DialogFooter>
+              <Button onClick={() => setCancelDialogIsOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  setCancelDialogIsOpen(false);
+                  resetStates();
+                }}
+              >
+                Confirmar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </form>
     </section>
   );
