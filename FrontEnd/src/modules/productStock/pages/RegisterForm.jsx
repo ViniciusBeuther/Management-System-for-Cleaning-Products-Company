@@ -90,6 +90,7 @@ const RegisterForm = () => {
             placeholder="Nome do Produto"
             {...register("name")}
           />
+          
           {errors.name && (
             <p className="text-red-500 text-sm mt-0">{errors.name.message}</p>
           )}
