@@ -19,6 +19,8 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 
 const RegisterForm = () => {
+  const API_URL = "http://localhost:3000/";
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [quantityInStock, setQuantityInStock] = useState("");
@@ -61,15 +63,50 @@ const RegisterForm = () => {
     setUnitPrice("");
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Dados validados:", data);
     const now = new Date();
     const month = now.getMonth() + 1;
-    const day = now.getDay();
+    const day = now.getDate();
     const year = now.getFullYear();
-    const fullDate = month + '-' + day + '-' + year;
-    console.log("resgistered_at: ", fullDate)
-    resetStates();
+    const fullDate = year + '-' + month + '-' + day;
+    // console.log("resgistered_at: ", fullDate)
+
+    const productData = {
+      ...data,
+      registered_at: fullDate
+    };
+
+    try{
+      const JWTToken = localStorage.getItem('token');
+
+      const response = await fetch(API_URL + '/products/register', {
+        method: POST,
+        headers:  {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${JWTToken}`,
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if( !response.ok ){
+          const errorMessage = await response.text();
+          alert('Erro ao cadastrar produto.');
+          
+          return
+      }
+
+      const responseData = await response.json();
+      alert('Produto inserido com sucesso!');
+      resetStates();
+      
+      return responseData;
+
+    } catch( error ){
+      console.log('Error: Cannot finished the http request: ' + error)
+      alert('Erro ao inserir produto');
+    }
+    
   };
 
   return (
