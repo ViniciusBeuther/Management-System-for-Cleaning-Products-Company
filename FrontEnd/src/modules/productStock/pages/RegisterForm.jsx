@@ -66,7 +66,8 @@ const RegisterForm = () => {
     const now = new Date();
     const month = now.getMonth() + 1;
     const day = now.getDay();
-    const fullDate = month + '-' + day;
+    const year = now.getFullYear();
+    const fullDate = month + '-' + day + '-' + year;
     console.log("resgistered_at: ", fullDate)
     resetStates();
   };
@@ -90,7 +91,7 @@ const RegisterForm = () => {
             placeholder="Nome do Produto"
             {...register("name")}
           />
-          
+
           {errors.name && (
             <p className="text-red-500 text-sm mt-0">{errors.name.message}</p>
           )}
