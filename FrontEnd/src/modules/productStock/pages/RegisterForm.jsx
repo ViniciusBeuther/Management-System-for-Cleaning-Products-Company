@@ -15,11 +15,10 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 
 const RegisterForm = () => {
-  const API_URL = "http://localhost:3000/";
+  const API_URL = "http://localhost:3000";
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -64,6 +63,7 @@ const RegisterForm = () => {
   };
 
   const onSubmit = async (data) => {
+    alert('clickd')
     console.log("Dados validados:", data);
     const now = new Date();
     const month = now.getMonth() + 1;
@@ -81,7 +81,7 @@ const RegisterForm = () => {
       const JWTToken = localStorage.getItem('token');
 
       const response = await fetch(API_URL + '/products/register', {
-        method: POST,
+        method: 'POST',
         headers:  {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${JWTToken}`,

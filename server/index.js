@@ -5,14 +5,14 @@ const cors = require('cors');
 // Routes for authentication login/register
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
-const productRoutes = require('/routes/product');
+const productRoutes = require('./routes/product');
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:5173' }));
 
 app.use('/auth', authRoutes);
-app.use('/products/', productRoutes);
+app.use('/products', productRoutes);
 
 // Running server on port 3000
 app.listen(3000, () => {

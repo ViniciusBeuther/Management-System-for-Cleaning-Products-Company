@@ -1,21 +1,20 @@
+const pool = require('../config/database');
+
 exports.register = async (req, res) => {
   try {
-    const { name, description, quantityInStock, unitPrice } = req.body;
+    const { name, description, stockQuantity, unitPrice } = req.body;
 
     // Check the obligatory fields are in the body != null
-    if (!name || quantityInStock == null || unitPrice == null) {
+    if (!name || stockQuantity == null || unitPrice == null) {
       return res
         .status(400)
         .send('Name, quantity in stock, and unit price are obligatory!');
     }
 
-    const date = new Date();
-    const registered_at = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-
   // execute the SQL query
     const [result] = await pool.query(
-      'INSERT INTO products(name, description, quantityInStock, unitPrice) VALUES (?, ?, ?, ?)',
-      [name, description, quantityInStock, unitPrice]
+      'INSERT INTO products(name, description, unit_price, stock_quantity) VALUES (?, ?, ?, ?)',
+      [name, description, unitPrice, stockQuantity]
     );
 
     // Returns the response, the product id
