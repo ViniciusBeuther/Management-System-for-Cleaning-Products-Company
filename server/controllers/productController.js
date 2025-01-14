@@ -2,10 +2,14 @@ const pool = require('../config/database');
 
 exports.register = async (req, res) => {
   try {
-    const { name, description, stockQuantity, unitPrice } = req.body;
+    const { name, description, quantityInStock, unitPrice, registered_at } = req.body;
+    // console.log(`name: ${typeof(name)}`);
+    // console.log(`description: ${typeof(description)}`);
+    // console.log(`stockQuantity: ${typeof(quantityInStock)}`);
+    // console.log(`UnitPrice: ${typeof(unitPrice)}`);
 
     // Check the obligatory fields are in the body != null
-    if (!name || stockQuantity == null || unitPrice == null) {
+    if (!name || quantityInStock == null || unitPrice == null) {
       return res
         .status(400)
         .send('Name, quantity in stock, and unit price are obligatory!');
@@ -13,9 +17,10 @@ exports.register = async (req, res) => {
 
   // execute the SQL query
     const [result] = await pool.query(
-      'INSERT INTO products(name, description, unit_price, stock_quantity) VALUES (?, ?, ?, ?)',
-      [name, description, unitPrice, stockQuantity]
+      'INSERT INTO products(`name`, `description`, `price`, `stock_quantity`, `registered_at`) VALUES (?, ?, ?, ?, ?)',
+      [name, description, parseFloat(unitPrice), parseInt(quantityInStock), registered_at]
     );
+
 
     // Returns the response, the product id
     return res

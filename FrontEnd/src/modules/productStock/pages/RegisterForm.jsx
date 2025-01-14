@@ -63,8 +63,8 @@ const RegisterForm = () => {
   };
 
   const onSubmit = async (data) => {
-    alert('clickd')
-    console.log("Dados validados:", data);
+    
+    // console.log("Dados validados:", data);
     const now = new Date();
     const month = now.getMonth() + 1;
     const day = now.getDate();
@@ -97,8 +97,8 @@ const RegisterForm = () => {
       }
 
       const responseData = await response.json();
-      alert('Produto inserido com sucesso!');
       resetStates();
+      alert('Produto inserido com sucesso!');
       
       return responseData;
 
@@ -127,6 +127,8 @@ const RegisterForm = () => {
             id="productForm_name_input"
             placeholder="Nome do Produto"
             {...register("name")}
+            value={name}
+            onChange={(ev) => setName(ev.target.value)}
           />
 
           {errors.name && (
@@ -139,6 +141,8 @@ const RegisterForm = () => {
             id="productForm_description_input"
             placeholder="Descrição do Produto"
             {...register("description")}
+            value={description}
+            onChange={(ev) => setDescription(ev.target.value)}
           />
           {errors.description && (
             <p className="text-red-500 text-sm mt-0">
@@ -154,6 +158,8 @@ const RegisterForm = () => {
             id="productForm_quantityInStock_input"
             placeholder="Quantidade em estoque"
             {...register("quantityInStock", { valueAsNumber: true })}
+            value={quantityInStock}
+            onChange={(ev) => setQuantityInStock(ev.target.value)}
           />
           {errors.quantityInStock && (
             <p className="text-red-500 text-sm mt-0">
@@ -167,6 +173,8 @@ const RegisterForm = () => {
             id="productForm_unitPrice_input"
             placeholder="Preço Unitário"
             {...register("unitPrice")}
+            value={unitPrice}
+            onChange={(ev) => setUnitPrice(ev.target.value)}
           />
           {errors.unitPrice && (
             <p className="text-red-500 text-sm mt-0">
@@ -190,6 +198,7 @@ const RegisterForm = () => {
           <Button
             className="bg-red-400 hover:bg-red-500 text-black"
             onClick={() => setCancelDialogIsOpen(true)}
+            type="button"
           >
             Cancelar
           </Button>
@@ -204,14 +213,17 @@ const RegisterForm = () => {
               Tem certeza que deseja cancelar o cadastro?
             </DialogDescription>
             <DialogFooter>
-              <Button onClick={() => setCancelDialogIsOpen(false)}>
+              <Button onClick={() => setCancelDialogIsOpen(false)}
+                className="bg-red-400 hover:bg-red-500 text-black"
+              >
                 Cancelar
               </Button>
               <Button
                 onClick={() => {
-                  setCancelDialogIsOpen(false);
                   resetStates();
+                  setCancelDialogIsOpen(false);
                 }}
+                className="bg-green-400 hover:bg-green-500 text-black"
               >
                 Confirmar
               </Button>
