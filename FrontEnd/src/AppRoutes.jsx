@@ -4,6 +4,7 @@ import Login from './modules/login/components/Login';
 import Home from './modules/home/Home';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RegisterForm from './modules/productStock/pages/RegisterForm';
+import StorageView from './modules/productStock/pages/StorageView';
 
 const AppRoutes = () => {
   return (
@@ -15,7 +16,7 @@ const AppRoutes = () => {
         
         {/* Routes for storage modules */}
         <Route path='/products' element={<ProtectedRoute> <RegisterForm /> </ProtectedRoute>} />
-        <Route path='/storage' element={<ProtectedRoute> <p>storage</p> </ProtectedRoute>} />
+        <Route path='/storage' element={<ProtectedRoute> <StorageView/> </ProtectedRoute>} />
         <Route path='/productReceivingForm' element={<ProtectedRoute> <p>receiving form</p> </ProtectedRoute>} />
       </Routes>
     </Router>

@@ -33,3 +33,8 @@ Clientes
 Fornecedores
 * Cadastrar/modificar fornecedor - ok
 * Remover fornecedor - ok
+
+
+Controle de Pedidos
+-> Formulário do excel para controle em entregas?
+	Feito para anotar o que vende com cod, desc preco etc e dai alimentar o sistema
