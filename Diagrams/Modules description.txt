@@ -1,6 +1,7 @@
 Estoque
 * Cadastro e remoção de produtos - ok
 * Controle de produtos disponíveis no estoque - ok
+	- Calcular valor em estoque e preço médio de compra
 * Inserção de recebimento de produtos
 
 Pedidos
@@ -9,13 +10,23 @@ Pedidos
 * Histórico de Pedidos - ok
 * Consultar pedidos em aberto (não pagos ainda) - ok
 * Emitir documento para pedidos à ser enviado aos clientes
+* Consultar pedidos de compra/venda
+	- Consultar pedidos de um item especifico
 
 Custos
 * Valores pagos - ok
 * Valores recebidos - ok
+* valores a pagar
+	Lançamento de contas fixas.
+	(verificação automática de despesas variáveis, pedidos à pagar)
 * Lançar recebimento de produto - ok
 * Precificação de produto - ok
+	-> (media do preco do produto por pedido OU inserir valor de custo) 
+	-> margem desejada
+	-> preco de venda
+	-> (considerar despesas fixas?)
 * Custo de compra por produto - ok
+	-> últimos pedidos + media
 
 Geração de Relatórios
 * Faturamento - ok
