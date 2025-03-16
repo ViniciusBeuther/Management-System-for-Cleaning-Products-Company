@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -16,14 +17,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
+import { API_PRODUCT_REGISTER_ROUTE, API_URL } from "@/utils/api/apiVariables";
 
 const RegisterForm = () => {
-  const API_URL = "http://localhost:3000";
+  const API_register_endpoint = API_URL + API_PRODUCT_REGISTER_ROUTE;
 
-  const [name, setName] = useState("");
+  const [product_name, setProductName] = useState("");
   const [description, setDescription] = useState("");
-  const [quantityInStock, setQuantityInStock] = useState("");
-  const [unitPrice, setUnitPrice] = useState("");
+  const [product_price, setProductPrice] = useState("");
   const [cancelDialogIsOpen, setCancelDialogIsOpen] = useState(false);
 
   // validation for form
@@ -32,11 +33,6 @@ const RegisterForm = () => {
       .required("O nome do produto é obrigatório.")
       .min(5, "O nome do produto deve ter pelo menos 5 caracteres"),
     description: Yup.string(),
-    quantityInStock: Yup.number()
-      .transform((value) => (isNaN(value) ? undefined : value))
-      .required("A quantidade em estoque é obrigatória.")
-      .min(0, "A quantidade não pode ser negativa.")
-      .integer("A quantidade deve ser um número inteiro"),
     unitPrice: Yup.number()
       .transform((value, originalValue) =>
         parseFloat(originalValue.replace(",", "."))
@@ -58,29 +54,22 @@ const RegisterForm = () => {
   const resetStates = () => {
     setName("");
     setDescription("");
-    setQuantityInStock("");
     setUnitPrice("");
   };
 
   const onSubmit = async (data) => {
     
     // console.log("Dados validados:", data);
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    const year = now.getFullYear();
-    const fullDate = year + '-' + month + '-' + day;
-    // console.log("resgistered_at: ", fullDate)
 
     const productData = {
-      ...data,
-      registered_at: fullDate
+      product_name: data.name,
+      product_price: data.unitPrice
     };
 
     try{
       const JWTToken = localStorage.getItem('token');
 
-      const response = await fetch(API_URL + '/products/register', {
+      const response = await fetch(API_register_endpoint, {
         method: 'POST',
         headers:  {
           'Content-Type': 'application/json',
@@ -93,7 +82,7 @@ const RegisterForm = () => {
           const errorMessage = await response.text();
           alert('Erro ao cadastrar produto.');
           
-          return
+          return;
       }
 
       const responseData = await response.json();
@@ -127,15 +116,15 @@ const RegisterForm = () => {
             id="productForm_name_input"
             placeholder="Nome do Produto"
             {...register("name")}
-            value={name}
-            onChange={(ev) => setName(ev.target.value)}
+            value={product_name}
+            onChange={(ev) => setProductName(ev.target.value)}
           />
 
           {errors.name && (
             <p className="text-red-500 text-sm mt-0">{errors.name.message}</p>
           )}
 
-          <Label htmlFor="productForm_description">Descrição</Label>
+          <Label htmlFor="productForm_description">Descrição (Opcional)</Label>
           <Input
             type="text"
             id="productForm_description_input"
@@ -150,31 +139,14 @@ const RegisterForm = () => {
             </p>
           )}
 
-          <Label htmlFor="productForm_quantityInStock">
-            Quantidade em estoque
-          </Label>
-          <Input
-            type="number"
-            id="productForm_quantityInStock_input"
-            placeholder="Quantidade em estoque"
-            {...register("quantityInStock", { valueAsNumber: true })}
-            value={quantityInStock}
-            onChange={(ev) => setQuantityInStock(ev.target.value)}
-          />
-          {errors.quantityInStock && (
-            <p className="text-red-500 text-sm mt-0">
-              {errors.quantityInStock.message}
-            </p>
-          )}
-
-          <Label htmlFor="productForm_unitPrice">Preço Unitário (R$)</Label>
+          <Label htmlFor="productForm_unitPrice">Preço de venda da unidade (R$)</Label>
           <Input
             type="text"
             id="productForm_unitPrice_input"
             placeholder="Preço Unitário"
             {...register("unitPrice")}
-            value={unitPrice}
-            onChange={(ev) => setUnitPrice(ev.target.value)}
+            value={product_price}
+            onChange={(ev) => setProductPrice(ev.target.value)}
           />
           {errors.unitPrice && (
             <p className="text-red-500 text-sm mt-0">

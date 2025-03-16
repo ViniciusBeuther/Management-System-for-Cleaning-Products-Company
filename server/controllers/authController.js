@@ -15,14 +15,14 @@ const jwt = require('jsonwebtoken');
  */
 exports.register = async (req, res) => {
   try {
-    const { username, password, email } = req.body;
-    if (!username || !password || !email) {
-      return res.status(400).send('Username, email and password are required');
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).send('Username and password are required');
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO users(username, email, password) VALUES(?,?,?)';    
-    pool.query(query, [username, email, hashedPassword], (err, result) => {
+    const query = 'INSERT INTO User(username, password) VALUES(?,?)';    
+    pool.query(query, [username, hashedPassword], (err, result) => {
       if (err) {
         return res.status(500).send('Database error');
       }
@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
     }
 
     // Query in database
-    const [users] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+    const [users] = await pool.query('SELECT * FROM user WHERE username = ?', [username]);
 
     // Check if the user exists
     if (users.length === 0) {

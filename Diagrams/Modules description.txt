@@ -1,10 +1,10 @@
-Estoque
+Estoque -> Queries OK for while
 * Cadastro e remoção de produtos - ok
 * Controle de produtos disponíveis no estoque - ok
 	- Calcular valor em estoque e preço médio de compra
 * Inserção de recebimento de produtos
 
-Pedidos
+Pedidos -> Queries OK for while
 * Emitir pedido - ok
 * Cadastrar pedido - ok
 * Histórico de Pedidos - ok
@@ -40,10 +40,12 @@ Saldo a receber
 Clientes
 * Cadastrar/modificar clientes - ok
 * Remover clientes - ok
+* Listar clientes
 
 Fornecedores
 * Cadastrar/modificar fornecedor - ok
 * Remover fornecedor - ok
+* Listar fornecedores
 
 
 Controle de Pedidos
