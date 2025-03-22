@@ -28,14 +28,15 @@ exports.register = async (req, res) => {
       [product_name, parseFloat(product_price).toFixed(2)]
     );
     console.log(`Product inserted into db: ${result.insertId}`)
+    
     // get the product_id to insert the product_description
+
     const product_id = result.insertId; 
     if (description) {
       await pool.query(
       'INSERT INTO Product_Description(`product_id`, `product_description`) VALUES (?, ?)',
       [product_id, description]
-      );
-      
+      );  
     }
 
 
