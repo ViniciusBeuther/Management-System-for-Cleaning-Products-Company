@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { API_PRODUCT_REGISTER_ROUTE, API_URL } from "@/utils/api/apiVariables";
+import SuccessAlert from "@/components/Alerts/SuccessAlert";
+import ErrorAlert from "@/components/Alerts/ErrorAlert";
 
 const RegisterForm = () => {
   const API_register_endpoint = API_URL + API_PRODUCT_REGISTER_ROUTE;
@@ -26,6 +28,8 @@ const RegisterForm = () => {
   const [description, setDescription] = useState("");
   const [product_price, setProductPrice] = useState("");
   const [cancelDialogIsOpen, setCancelDialogIsOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   // validation for form
   const validationSchema = Yup.object().shape({
@@ -39,7 +43,7 @@ const RegisterForm = () => {
       )
       .required("O preço unitário é obrigatório.")
       .min(0, "O preço não pode ser negativo.")
-      .positive("O preço deve ser maior que zero"),
+      .positive("O preço deve ser maior que zero."),
   });
 
   const {
@@ -52,18 +56,20 @@ const RegisterForm = () => {
   });
 
   const resetStates = () => {
-    setName("");
+    setProductName("");
     setDescription("");
-    setUnitPrice("");
+    setProductPrice("");
   };
 
   const onSubmit = async (data) => {
     
     // console.log("Dados validados:", data);
 
+    // structure to receive in the backend endpoint
     const productData = {
       product_name: data.name,
-      product_price: data.unitPrice
+      product_price: data.unitPrice,
+      product_description:  data.description
     };
 
     try{
@@ -80,15 +86,19 @@ const RegisterForm = () => {
 
       if( !response.ok ){
           const errorMessage = await response.text();
-          alert('Erro ao cadastrar produto.');
-          
-          return;
+          setShowErrorAlert(true);
+          setTimeout(() => setShowAlert(true), 1000 * 5);
+
+          return console.log(`Response not OK, error: ${errorMessage}`);
       }
 
       const responseData = await response.json();
       resetStates();
-      alert('Produto inserido com sucesso!');
-      
+      // alert('Produto inserido com sucesso!');
+
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 1000 * 5);
+
       return responseData;
 
     } catch( error ){
@@ -202,6 +212,15 @@ const RegisterForm = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {/* show success alert */}
+        { showAlert ? (
+            <SuccessAlert title={"Item Inserido com sucesso!"} description={"O item foi adicionado com sucesso aos seus produtos."} />
+        ) : null}
+        
+        {/* show error alert */}
+        { showErrorAlert ? (
+          <ErrorAlert title={"Ocorreu um erro ao inserir o item!"} description="Favor tente novamente." />
+        ) : null }
       </form>
     </section>
   );

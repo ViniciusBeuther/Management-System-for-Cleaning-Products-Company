@@ -9,12 +9,9 @@ expect params in the request's body
 */
 exports.register = async (req, res) => {
   try {
-    const { product_name, description, product_price } = req.body;
-    // console.log(`product_name: ${typeof(product_name)}`);
-    // console.log(`description: ${typeof(description)}`);
-    // console.log(`stockQuantity: ${typeof(quantityInStock)}`);
-    // console.log(`product_price: ${typeof(product_price)}`);
-    console.log(req.body)
+    const { product_name, product_description, product_price } = req.body;
+    // console.log(req.body)
+
     // Check the obligatory fields are in the body != null
     if (!product_name || (product_price == null ) || product_price <= 0.00) {
       return res
@@ -27,15 +24,13 @@ exports.register = async (req, res) => {
       'INSERT INTO Product(`product_name`, `product_price`) VALUES (?, ?)',
       [product_name, parseFloat(product_price).toFixed(2)]
     );
-    console.log(`Product inserted into db: ${result.insertId}`)
     
     // get the product_id to insert the product_description
-
     const product_id = result.insertId; 
-    if (description) {
+    if (product_description) {
       await pool.query(
       'INSERT INTO Product_Description(`product_id`, `product_description`) VALUES (?, ?)',
-      [product_id, description]
+      [product_id, product_description]
       );  
     }
 
