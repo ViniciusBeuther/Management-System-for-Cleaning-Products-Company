@@ -11,7 +11,6 @@ import {
   Dialog,
   DialogContent,
   DialogFooter,
-  DialogClose,
   DialogHeader,
   DialogDescription,
   DialogTitle,

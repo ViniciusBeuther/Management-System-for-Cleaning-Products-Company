@@ -63,3 +63,24 @@ exports.getCurrentStock = async(req, res) => {
     return res.status(401).send('Unauthorized Access');
   }
 }
+
+/*
+  @ no params, it requires to be authenticated
+  @ JWT Token into the request's header
+
+  End point used to list all the products that are registered into the inventory
+*/
+exports.listRegisteredProducts = async(req, res) => {
+  try {
+    const [response] = await pool.query(
+        'SELECT * FROM list_registered_products;'
+    );
+
+    console.log(response);
+
+    return res.status(200).json({ message: 'Information Fetched Successfully', data: response })
+  } catch(error) {
+    console.log(error);
+    return res.status(401).send('Unauthorized Access')
+  }
+};

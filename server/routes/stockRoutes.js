@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/register', stockController.register);
 router.get('/current_stock', authMiddleware, stockController.getCurrentStock);
+router.get('/listRegisteredProducts', authMiddleware, stockController.listRegisteredProducts);
 //router.post('/register', stockController.register);
 
 module.exports = router;

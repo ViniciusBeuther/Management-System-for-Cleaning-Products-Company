@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
   const linksForStorageModule = [
     ["Cadastrar produto", "/products"],
+    ["Consultar produtos cadastrados", "/products/consult"],
     ["Consultar estoque", "/storage"],
     ["Recebimento de Produtos", "/productReceivingForm"],
   ];
