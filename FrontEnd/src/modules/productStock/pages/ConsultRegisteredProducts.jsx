@@ -33,8 +33,7 @@ const ConsultRegisteredProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [modalIsOpened, setModalIsOpened] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [editedProduct, setEditedProduct] = useState(null);
-
+  const [isEditing, setIsEditing] = useState(false);
   const itemsPerPage = 10;
   const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE);
 
@@ -71,18 +70,11 @@ const ConsultRegisteredProducts = () => {
     setModalIsOpened(true);
   };
 
-  // Handle edit click, remove the disabled property from the input element
-  const handleToggleEdit = (ev) => {
-    const parentElement = ev.target.parentElement.parentElement;
-    const inputElement = parentElement.childNodes[1];
-    // console.log(inputElement);
-    inputElement.disabled = false;
-  };
-
   // Close dialog modal
   const handleCloseModal = () => {
     setModalIsOpened(false);
     setSelectedProduct(null);
+    setIsEditing(false);
   };
 
   return (
@@ -193,11 +185,10 @@ const ConsultRegisteredProducts = () => {
 
         {/* Updates modal */}
         {modalIsOpened ? (
-          <Dialog open={modalIsOpened} onOpenChange={setModalIsOpened} size={"lg"}>
+          <Dialog open={modalIsOpened} onOpenChange={(open) => !open && handleCloseModal()} size={"lg"}>
             <DialogContent aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Editar Informações do Produto</DialogTitle>
-
               </DialogHeader>
               {selectedProduct && (
                 <section>
@@ -210,21 +201,9 @@ const ConsultRegisteredProducts = () => {
                     <Input
                       type="text"
                       value={selectedProduct.product_name}
-                      onChange={(ev) => setSelectedProduct({
-                        product_id: selectedProduct.product_id,
-                        product_name: ev.target.value,
-                        product_price: selectedProduct.product_price,
-                        product_description: selectedProduct?.product_description
-                      })}
-                      disabled={true}
+                      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_name: ev.target.value }))}
+                      disabled={!isEditing}
                     />
-                    <section 
-                      className="bg-white hover:bg-primaryBtn border-primaryBtn border-[2px] text-sm text-black duration-500 p-1 rounded-lg mt-2 hover:cursor-pointer"
-                      onClick={(ev) => handleToggleEdit(ev)}
-                      
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </section>
                   </article>
 
                   <article className="flex items-center gap-3">
@@ -232,40 +211,28 @@ const ConsultRegisteredProducts = () => {
                     <Input
                       type="text"
                       value={selectedProduct.product_price}
-                      onChange={(ev) => setSelectedProduct({
-                        product_id: selectedProduct.product_id,
-                        product_name: selectedProduct.product_name,
-                        product_price: ev.target.value,
-                        product_description: selectedProduct?.product_description
-                      })}
-                      disabled={true}
+                      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_price: ev.target.value }))}
+                      disabled={!isEditing}
                     />
-                    <section 
-                      className="bg-white hover:bg-primaryBtn border-primaryBtn border-[2px] text-sm text-black duration-500 p-1 rounded-lg mt-2 hover:cursor-pointer"
-                      onClick={(ev) => handleToggleEdit(ev)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </section>
                   </article>
 
-                  <article className="flex items-center gap-3">
-                    { selectedProduct.product_description != null ? (
-                      <article className="flex items-center gap-3">
-                        <p><strong className="font-bold">Descrição do produto:</strong> {selectedProduct.product_description}</p>
-                        <section className="bg-white hover:bg-primaryBtn border-primaryBtn border-[2px] text-sm text-black duration-500 p-1 rounded-lg mt-2 hover:cursor-pointer">
-                      <Pencil className="w-4 h-4" />
-                    </section>
-                      </article>
-                    ) : (
-                      <article>
-                        <Button
-                          className="bg-white hover:bg-primaryBtn border-primaryBtn border-[2px] mt-2 max-w-sm text-sm text-black duration-500"
-                        >+ Descrição</Button>
-                      </article>
-                    ) }
+                  <article className="flex items-center mt-2">
+                        <p className="w-[30%] whitespace-nowrap"><strong className="font-bold">Descrição:</strong></p>
+                          <Input
+                            type="text"
+                            value={selectedProduct.product_description != null ? selectedProduct.product_description : ""}
+                            onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_description: ev.target.value }))}
+                            disabled={!isEditing}
+                          />
                   </article>
 
                   <article className="mt-5 flex gap-3 justify-end items-center">
+                    <Button
+                      className="bg-white hover:bg-primaryBtn border-primaryBtn border-[2px] text-sm text-black duration-500 py-1 px-2 rounded-lg hover:cursor-pointer"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
                     <Button 
                       className="bg-successBtn hover:bg-successBtnHover hover:cursor-pointer text-black"
                       onClick={() => console.log(selectedProduct)}
