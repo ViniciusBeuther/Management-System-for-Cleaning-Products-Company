@@ -13,6 +13,10 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+				primaryBtn: 'oklch(0.746 0.16 232.661)',
+				primaryBtnHover: 'oklch(0.685 0.169 237.323)',
+				successBtn: 'oklch(0.696 0.17 162.48)',
+				successBtnHover: 'oklch(0.596 0.145 163.225)',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
