@@ -18,7 +18,7 @@ const Login = () => {
       <div className="relative py-3 sm:w-96 mx-auto text-center">
         <span className="text-2xl font-light ">Entrar na sua conta</span>
         <div className="mt-4 bg-white shadow-md rounded-lg text-left">
-          <div className="h-2 bg-blue-400 rounded-t-md"></div>
+          <div className="h-2 bg-primaryBtn rounded-t-md"></div>
           <div className="px-8 py-6 ">
             <label className="block font-semibold"> Usuário </label>
             <input
@@ -26,7 +26,7 @@ const Login = () => {
               value={user}
               placeholder="Usuário"
               onChange={(ev) => setUser(ev.target.value)}
-              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md
+              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-sky-500 focus:ring-1 rounded-md
               ${hasError ? 'border-red-400' : ''}
               `}
             />
@@ -36,7 +36,7 @@ const Login = () => {
               placeholder="Senha"
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md
+              className={`border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-sky-500 focus:ring-1 rounded-md
                 ${hasError ? 'border-red-400' : ''}
                 `}
 
@@ -45,7 +45,7 @@ const Login = () => {
             <div className="flex justify-between items-baseline">
               <button
                 type="submit"
-                className="mt-4 bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600"
+                className="mt-4 bg-primaryBtn text-black py-2 px-6 rounded-md hover:bg-primaryBtnHover"
                 onClick={() => handleClick()}
               >
                 Entrar

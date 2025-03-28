@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useGetFetch from "@/hooks/useGetFetch";
+import useRegEx from "@/hooks/useRegex";
 import {
   API_REGISTERED_PRODUCT_GET_ROUTE,
   API_URL,
@@ -46,6 +47,27 @@ const ConsultRegisteredProducts = () => {
   if (!hookData) {
     return <p>Carregando...</p>;
   }
+
+  // Call the validation and if it values are valid
+  const updateRecord = ( updatedProductObj ) => {
+    const areValidInputs = validateUpdatedInputs(updatedProductObj);
+
+    
+  };
+
+  // Function used to validate updated input values before pass it thru the API 
+  const validateUpdatedInputs = ( updatedProductObj ) => {
+    const { product_name, product_description, product_price } = updatedProductObj;
+    const regexPatternAmount = /.*R\$ +(.*)/;
+    const regexPatternProductName = /^[A-Za-z]+.*/;
+    const regexPatternDescription = /^[A-Za-z].*|^$/;
+
+    const amtIsValid = useRegEx({ content: product_price, regexPattern: regexPatternAmount });
+    const nameIsValid = useRegEx({ content: product_name, regexPattern: regexPatternProductName });
+    const descriptionIsValid = useRegEx({ content: product_description, regexPattern: regexPatternDescription });
+
+    console.log(`amt: ${amtIsValid} | name: ${nameIsValid} | description: ${descriptionIsValid}`);
+  };
 
   // Filter by name/description
   const filteredData = hookData.filter(
@@ -235,7 +257,7 @@ const ConsultRegisteredProducts = () => {
                     </Button>
                     <Button 
                       className="bg-successBtn hover:bg-successBtnHover hover:cursor-pointer text-black"
-                      onClick={() => console.log(selectedProduct)}
+                      onClick={() => updateRecord(selectedProduct)}
                     >Salvar</Button>
                   </article>
                 </section>
