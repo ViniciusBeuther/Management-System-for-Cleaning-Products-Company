@@ -182,9 +182,9 @@ CREATE TABLE IF NOT EXISTS Customer(
         ON UPDATE CASCADE
 );
 
-
+select * from user;
 CREATE TABLE User(
 	user_id INT NOT NULL AUTO_INCREMENT UNIQUE,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(30) NOT NULL
+    password VARCHAR(100) NOT NULL
 );

@@ -126,8 +126,16 @@ JOIN Product p ON p.product_id = oi.product_id
 WHERE s.status = 'Pendente'
 GROUP BY eo.entry_order_id, s.status, sp.company_name, o.order_date;
 
--- ====== COSTS MODULE ======
 
+-- Get all the registered Products and descriptions
+CREATE VIEW list_registered_products AS
+SELECT p.product_id, p.product_name, CONCAT('R$ ', p.product_price) AS product_price, pd.product_description, p.registered_at
+FROM Product p 
+LEFT JOIN Product_Description pd ON pd.product_id = p.product_id
+ORDER BY p.product_id;
+
+
+-- ====== COSTS MODULE ======
 -- Get all bills paid and unpaid
 CREATE VIEW v_all_bills AS
 SELECT bt.bill_type,
