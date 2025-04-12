@@ -35,8 +35,18 @@ const ConsultRegisteredProducts = () => {
   const [modalIsOpened, setModalIsOpened] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
   const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE);
+  const [errors, setErrors] = useState({
+    product_name: false,
+    product_price: false,
+    product_description: false
+  });
+  const [errorMessages, setErrorMessages] = useState({
+    product_name: '',
+    product_price: '',
+    product_description: '' 
+  });
 
   // set the page to 1 when search bar is changed
   useEffect(() => {
@@ -51,22 +61,51 @@ const ConsultRegisteredProducts = () => {
   // Call the validation and if it values are valid
   const updateRecord = ( updatedProductObj ) => {
     const areValidInputs = validateUpdatedInputs(updatedProductObj);
-
     
   };
 
   // Function used to validate updated input values before pass it thru the API 
-  const validateUpdatedInputs = ( updatedProductObj ) => {
+  const validateUpdatedInputs = (updatedProductObj) => {
     const { product_name, product_description, product_price } = updatedProductObj;
-    const regexPatternAmount = /.*R\$ +(.*)/;
+    const regexPatternAmount = /^R\$ +([0-9]+\.[0-9]+$)/;
     const regexPatternProductName = /^[A-Za-z]+.*/;
-    const regexPatternDescription = /^[A-Za-z].*|^$/;
-
-    const amtIsValid = useRegEx({ content: product_price, regexPattern: regexPatternAmount });
-    const nameIsValid = useRegEx({ content: product_name, regexPattern: regexPatternProductName });
-    const descriptionIsValid = useRegEx({ content: product_description, regexPattern: regexPatternDescription });
-
-    console.log(`amt: ${amtIsValid} | name: ${nameIsValid} | description: ${descriptionIsValid}`);
+    const regexPatternDescription = /(^[A-Za-z].*)|^$/;
+  
+    let isValid = true;
+    const newErrors = {};
+    const newMessages = {};
+  
+    if (!useRegEx({ content: product_name, regexPattern: regexPatternProductName })) {
+      newErrors.product_name = true;
+      newMessages.product_name = 'Nome deve começar com letra';
+      isValid = false;
+    } else {
+      newErrors.product_name = false;
+      newMessages.product_name = '';
+    }
+  
+    if (!useRegEx({ content: product_price, regexPattern: regexPatternAmount })) {
+      newErrors.product_price = true;
+      newMessages.product_price = 'Formato de preço inválido (ex: R$ 10.99)';
+      isValid = false;
+    } else {
+      newErrors.product_price = false;
+      newMessages.product_price = '';
+    }
+  
+    if (!useRegEx({ content: product_description, regexPattern: regexPatternDescription }) && product_description != null) {
+      newErrors.product_description = true;
+      newMessages.product_description = 'Descrição deve começar com letra';
+      isValid = false;
+    } else {
+      newErrors.product_description = false;
+      newMessages.product_description = '';
+    }
+  
+    setErrors(newErrors);
+    setErrorMessages(newMessages);
+    // console.log(newErrors);
+    return isValid;
   };
 
   // Filter by name/description
@@ -97,6 +136,8 @@ const ConsultRegisteredProducts = () => {
     setModalIsOpened(false);
     setSelectedProduct(null);
     setIsEditing(false);
+    setErrorMessages({});
+    setErrors({});
   };
 
   return (
@@ -214,39 +255,53 @@ const ConsultRegisteredProducts = () => {
               </DialogHeader>
               {selectedProduct && (
                 <section>
-                  <article>
-                    <p className="text-md mt-0"><strong className="font-bold">ID Produto:</strong> { selectedProduct.product_id }</p>
-                  </article>
+<article className="flex items-center gap-3 mb-2">
+  <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Nome do produto:</strong></p>
+  <div className="w-full">
+    <Input
+      type="text"
+      value={selectedProduct.product_name}
+      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_name: ev.target.value }))}
+      disabled={!isEditing}
+      className={errors.product_name ? 'border-red-500' : ''}
+    />
+    {errors.product_name && (
+      <p className="text-red-500 text-sm mt-1">{errorMessages.product_name}</p>
+    )}
+  </div>
+</article>
 
-                  <article className="flex items-center gap-3 mb-2">
-                  <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Nome do produto:</strong></p>
-                    <Input
-                      type="text"
-                      value={selectedProduct.product_name}
-                      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_name: ev.target.value }))}
-                      disabled={!isEditing}
-                    />
-                  </article>
+<article className="flex items-center gap-3">
+  <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Preço de venda (un):</strong></p>
+  <div className="w-full">
+    <Input
+      type="text"
+      value={selectedProduct.product_price}
+      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_price: ev.target.value }))}
+      disabled={!isEditing}
+      className={errors.product_price ? 'border-red-500' : ''}
+    />
+    {errors.product_price && (
+      <p className="text-red-500 text-sm mt-1">{errorMessages.product_price}</p>
+    )}
+  </div>
+</article>
 
-                  <article className="flex items-center gap-3">
-                    <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Preço de venda (un):</strong></p>
-                    <Input
-                      type="text"
-                      value={selectedProduct.product_price}
-                      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_price: ev.target.value }))}
-                      disabled={!isEditing}
-                    />
-                  </article>
-
-                  <article className="flex items-center mt-2">
-                        <p className="w-[30%] whitespace-nowrap"><strong className="font-bold">Descrição:</strong></p>
-                          <Input
-                            type="text"
-                            value={selectedProduct.product_description != null ? selectedProduct.product_description : ""}
-                            onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_description: ev.target.value }))}
-                            disabled={!isEditing}
-                          />
-                  </article>
+<article className="flex items-center mt-2">
+  <p className="w-[30%] whitespace-nowrap"><strong className="font-bold">Descrição:</strong></p>
+  <div className="w-full">
+    <Input
+      type="text"
+      value={selectedProduct.product_description != null ? selectedProduct.product_description : ""}
+      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_description: ev.target.value }))}
+      disabled={!isEditing}
+      className={errors.product_description ? 'border-red-500' : ''}
+    />
+    {errors.product_description && (
+      <p className="text-red-500 text-sm mt-1">{errorMessages.product_description}</p>
+    )}
+  </div>
+</article>
 
                   <article className="mt-5 flex gap-3 justify-end items-center">
                     <Button

@@ -84,3 +84,33 @@ exports.listRegisteredProducts = async(req, res) => {
     return res.status(401).send('Unauthorized Access')
   }
 };
+
+/*
+  Expect params in body of the HTTP request (updated object)
+  @param 1: product_name
+  @param 2: product_price
+  @param 3: description (optional)
+*/
+exports.updateRegisteredItem = async(req, res) => {
+  try{
+    const { product_id, product_name, product_price, product_description } = req.body;
+
+    if( !product_name || !product_price || product_price < 0.00){
+      return res.status(400).send('Request must include the updated product_name and product_price, price must be positive.');
+    }
+
+    if( product_description != '' && product_description != null ){
+      const [existsInDb] = await pool.query(
+        `SELECT COUNT(1) FROM Product_Description WHERE product_id = ${product_id};`
+      );
+      
+      if( existsInDb.length != 0 ){
+        `SELECT `
+      };
+
+    }
+
+  } catch( error ){
+    console.log('Error updated')
+  }
+}

@@ -1,5 +1,7 @@
 const useRegEx = ( { content, regexPattern } ) => {
-  if(content.match(regexPattern)) {
+  // console.log(`${content}-${regexPattern}`)
+  
+  if (typeof content === 'string' && content.match(regexPattern)) {
     return true;
   }
   return false;

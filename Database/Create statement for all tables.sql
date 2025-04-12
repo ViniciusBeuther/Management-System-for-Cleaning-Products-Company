@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS Exit_Order(
         ON UPDATE CASCADE
 );
 
+
 CREATE TABLE IF NOT EXISTS Order_Item(
 	product_id INT NOT NULL,
     order_id INT NOT NULL,
@@ -171,7 +172,7 @@ CREATE TABLE IF NOT EXISTS Address(
 );
 
 CREATE TABLE IF NOT EXISTS Customer(
-	customer_id INT NOT NULL,
+	customer_id INT NOT NULL UNIQUE,
     address_id INT NOT NULL,
     PRIMARY KEY(customer_id, address_id),
     FOREIGN KEY(customer_id) REFERENCES Person(person_id)
@@ -181,6 +182,8 @@ CREATE TABLE IF NOT EXISTS Customer(
 		ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
+
+drop table Customer;
 
 select * from user;
 CREATE TABLE User(
