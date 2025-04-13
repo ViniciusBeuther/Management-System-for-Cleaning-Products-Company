@@ -19,10 +19,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Toast } from "@/components/ui/toast";
 import useGetFetch from "@/hooks/useGetFetch";
 import useRegEx from "@/hooks/useRegex";
+import { updateRegisteredProduct } from "@/services/productService";
 import {
   API_REGISTERED_PRODUCT_GET_ROUTE,
+  API_UPDATE_REGISTERED_PRODUCT_ROUTE,
   API_URL,
 } from "@/utils/api/apiVariables";
 import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Trash } from "lucide-react";
@@ -45,7 +48,7 @@ const ConsultRegisteredProducts = () => {
   const [errorMessages, setErrorMessages] = useState({
     product_name: '',
     product_price: '',
-    product_description: '' 
+    product_description: ''
   });
 
   // set the page to 1 when search bar is changed
@@ -59,9 +62,12 @@ const ConsultRegisteredProducts = () => {
   }
 
   // Call the validation and if it values are valid
-  const updateRecord = ( updatedProductObj ) => {
+  const updateRecord = async (updatedProductObj) => {
     const areValidInputs = validateUpdatedInputs(updatedProductObj);
-    
+    if (!areValidInputs) return;
+
+    const JWT_TOKEN = localStorage.getItem('token');
+    await updateRegisteredProduct(updatedProductObj, JWT_TOKEN);
   };
 
   // Function used to validate updated input values before pass it thru the API 
@@ -70,11 +76,12 @@ const ConsultRegisteredProducts = () => {
     const regexPatternAmount = /^R\$ +([0-9]+\.[0-9]+$)/;
     const regexPatternProductName = /^[A-Za-z]+.*/;
     const regexPatternDescription = /(^[A-Za-z].*)|^$/;
-  
+    console.log(`object being passed to http: ${updatedProductObj}`);
+    
     let isValid = true;
     const newErrors = {};
     const newMessages = {};
-  
+
     if (!useRegEx({ content: product_name, regexPattern: regexPatternProductName })) {
       newErrors.product_name = true;
       newMessages.product_name = 'Nome deve começar com letra';
@@ -83,7 +90,7 @@ const ConsultRegisteredProducts = () => {
       newErrors.product_name = false;
       newMessages.product_name = '';
     }
-  
+
     if (!useRegEx({ content: product_price, regexPattern: regexPatternAmount })) {
       newErrors.product_price = true;
       newMessages.product_price = 'Formato de preço inválido (ex: R$ 10.99)';
@@ -92,7 +99,7 @@ const ConsultRegisteredProducts = () => {
       newErrors.product_price = false;
       newMessages.product_price = '';
     }
-  
+
     if (!useRegEx({ content: product_description, regexPattern: regexPatternDescription }) && product_description != null) {
       newErrors.product_description = true;
       newMessages.product_description = 'Descrição deve começar com letra';
@@ -101,7 +108,7 @@ const ConsultRegisteredProducts = () => {
       newErrors.product_description = false;
       newMessages.product_description = '';
     }
-  
+
     setErrors(newErrors);
     setErrorMessages(newMessages);
     // console.log(newErrors);
@@ -202,7 +209,7 @@ const ConsultRegisteredProducts = () => {
                     {product.product_description}
                   </TableCell>
                   <TableCell className="text-right flex items-center justify-center gap-2">
-                    <Button 
+                    <Button
                       size={'sm'}
                       className="text-white"
                       onClick={() => handleEditClick(product)}
@@ -210,7 +217,7 @@ const ConsultRegisteredProducts = () => {
                       <Pencil className="w-4 h-4" />
                       Editar
                     </Button>
-                    <Button 
+                    <Button
                       size={'sm'}
                       className="bg-red-400 hover:bg-red-500 text-black"
                     >
@@ -255,53 +262,53 @@ const ConsultRegisteredProducts = () => {
               </DialogHeader>
               {selectedProduct && (
                 <section>
-<article className="flex items-center gap-3 mb-2">
-  <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Nome do produto:</strong></p>
-  <div className="w-full">
-    <Input
-      type="text"
-      value={selectedProduct.product_name}
-      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_name: ev.target.value }))}
-      disabled={!isEditing}
-      className={errors.product_name ? 'border-red-500' : ''}
-    />
-    {errors.product_name && (
-      <p className="text-red-500 text-sm mt-1">{errorMessages.product_name}</p>
-    )}
-  </div>
-</article>
+                  <article className="flex items-center gap-3 mb-2">
+                    <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Nome do produto:</strong></p>
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        value={selectedProduct.product_name}
+                        onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_name: ev.target.value }))}
+                        disabled={!isEditing}
+                        className={errors.product_name ? 'border-red-500' : ''}
+                      />
+                      {errors.product_name && (
+                        <p className="text-red-500 text-sm mt-1">{errorMessages.product_name}</p>
+                      )}
+                    </div>
+                  </article>
 
-<article className="flex items-center gap-3">
-  <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Preço de venda (un):</strong></p>
-  <div className="w-full">
-    <Input
-      type="text"
-      value={selectedProduct.product_price}
-      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_price: ev.target.value }))}
-      disabled={!isEditing}
-      className={errors.product_price ? 'border-red-500' : ''}
-    />
-    {errors.product_price && (
-      <p className="text-red-500 text-sm mt-1">{errorMessages.product_price}</p>
-    )}
-  </div>
-</article>
+                  <article className="flex items-center gap-3">
+                    <p className="w-[50%] whitespace-nowrap"><strong className="font-bold">Preço de venda (un):</strong></p>
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        value={selectedProduct.product_price}
+                        onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_price: ev.target.value }))}
+                        disabled={!isEditing}
+                        className={errors.product_price ? 'border-red-500' : ''}
+                      />
+                      {errors.product_price && (
+                        <p className="text-red-500 text-sm mt-1">{errorMessages.product_price}</p>
+                      )}
+                    </div>
+                  </article>
 
-<article className="flex items-center mt-2">
-  <p className="w-[30%] whitespace-nowrap"><strong className="font-bold">Descrição:</strong></p>
-  <div className="w-full">
-    <Input
-      type="text"
-      value={selectedProduct.product_description != null ? selectedProduct.product_description : ""}
-      onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_description: ev.target.value }))}
-      disabled={!isEditing}
-      className={errors.product_description ? 'border-red-500' : ''}
-    />
-    {errors.product_description && (
-      <p className="text-red-500 text-sm mt-1">{errorMessages.product_description}</p>
-    )}
-  </div>
-</article>
+                  <article className="flex items-center mt-2">
+                    <p className="w-[30%] whitespace-nowrap"><strong className="font-bold">Descrição:</strong></p>
+                    <div className="w-full">
+                      <Input
+                        type="text"
+                        value={selectedProduct.product_description != null ? selectedProduct.product_description : ""}
+                        onChange={(ev) => setSelectedProduct(prev => ({ ...prev, product_description: ev.target.value }))}
+                        disabled={!isEditing}
+                        className={errors.product_description ? 'border-red-500' : ''}
+                      />
+                      {errors.product_description && (
+                        <p className="text-red-500 text-sm mt-1">{errorMessages.product_description}</p>
+                      )}
+                    </div>
+                  </article>
 
                   <article className="mt-5 flex gap-3 justify-end items-center">
                     <Button
@@ -310,7 +317,7 @@ const ConsultRegisteredProducts = () => {
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
-                    <Button 
+                    <Button
                       className="bg-successBtn hover:bg-successBtnHover hover:cursor-pointer text-black"
                       onClick={() => updateRecord(selectedProduct)}
                     >Salvar</Button>

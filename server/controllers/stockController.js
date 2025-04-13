@@ -87,30 +87,49 @@ exports.listRegisteredProducts = async(req, res) => {
 
 /*
   Expect params in body of the HTTP request (updated object)
-  @param 1: product_name
-  @param 2: product_price
-  @param 3: description (optional)
+  @param 1: product_id
+  @param 2: product_name
+  @param 3: product_price (just the amount, without currency symbol)
+  @param 4: description (optional)
 */
 exports.updateRegisteredItem = async(req, res) => {
   try{
     const { product_id, product_name, product_price, product_description } = req.body;
+    const price = product_price.replace(/^R\$ ([0-9]+\.[0-9]+)$/g, '$1');
+    console.log(`updated price, only numbers: ${price}`);
 
     if( !product_name || !product_price || product_price < 0.00){
       return res.status(400).send('Request must include the updated product_name and product_price, price must be positive.');
     }
 
-    if( product_description != '' && product_description != null ){
+    if (product_description !== '' && product_description !== null) {
       const [existsInDb] = await pool.query(
-        `SELECT COUNT(1) FROM Product_Description WHERE product_id = ${product_id};`
+      'SELECT COUNT(1) AS count FROM Product_Description WHERE product_id = ?;',
+      [product_id]
       );
-      
-      if( existsInDb.length != 0 ){
-        `SELECT `
-      };
 
+      if (existsInDb[0].count > 0) {
+      await pool.query(
+        'UPDATE Product_Description SET product_description = ? WHERE product_id = ?;',
+        [product_description, product_id]
+      );
+      } else {
+      await pool.query(
+        'INSERT INTO Product_Description (product_id, product_description) VALUES (?, ?);',
+        [product_id, product_description]
+      );
+      }
     }
 
+    const [result] = await pool.query(
+      'UPDATE Product SET product_name = ?, product_price = ? WHERE product_id = ?;',
+      [product_name, price, product_id]
+    );
+
+    return(res.status(202).json({message: "Success, product updated.", success: true}));
+
   } catch( error ){
-    console.log('Error updated')
+    console.log(`Error updated: ${error}`);
+    return(res.status(500).json({message: "An error occurred updating the product.", success: false}));
   }
 }
