@@ -1,16 +1,13 @@
 import HeaderComponent from "@/components/global/Header";
+import SuccessToast from "@/components/Toast/SuccessToast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -19,13 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Toast } from "@/components/ui/toast";
 import useGetFetch from "@/hooks/useGetFetch";
 import useRegEx from "@/hooks/useRegex";
-import { updateRegisteredProduct } from "@/services/productService";
+import { deleteRegisteredProduct, updateRegisteredProduct } from "@/services/productService";
 import {
   API_REGISTERED_PRODUCT_GET_ROUTE,
-  API_UPDATE_REGISTERED_PRODUCT_ROUTE,
   API_URL,
 } from "@/utils/api/apiVariables";
 import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Trash } from "lucide-react";
@@ -33,13 +28,18 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const ConsultRegisteredProducts = () => {
+  /* Variables Initialization */
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [modalIsOpened, setModalIsOpened] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const itemsPerPage = 8;
+  const [wasUpdated, setWasUpdated] = useState(false);
+  const [wasRemoved, setWasRemoved] = useState(false);
+  const [idToDelete, setIdToDelete] = useState();
   const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE);
+  const [isShowingDeleteModal, setIsShowingDeleteModal] = useState(false);
   const [errors, setErrors] = useState({
     product_name: false,
     product_price: false,
@@ -67,7 +67,14 @@ const ConsultRegisteredProducts = () => {
     if (!areValidInputs) return;
 
     const JWT_TOKEN = localStorage.getItem('token');
-    await updateRegisteredProduct(updatedProductObj, JWT_TOKEN);
+    let temp = await updateRegisteredProduct(updatedProductObj, JWT_TOKEN, handleCloseModal);
+    setTimeout(() => setWasUpdated(true), 1000 * 2);
+    // If was updated successfully, shows the toast
+    if( temp ){
+      setTimeout(() => setWasUpdated(false), 1000 * 8);
+    }
+
+    // setWasUpdated(temp);
   };
 
   // Function used to validate updated input values before pass it thru the API 
@@ -137,6 +144,20 @@ const ConsultRegisteredProducts = () => {
     setSelectedProduct(product);
     setModalIsOpened(true);
   };
+
+  const handleDeleteClick = (product_id) => {
+    setIsShowingDeleteModal(true);
+    setIdToDelete(product_id);
+  }
+
+  const handleCloseDeleteModal = () => {
+    setIsShowingDeleteModal(false);
+  }
+
+  const onDeleteConfirm = async () => {
+    const JWT_Token = localStorage.getItem('token');
+    const temp = await deleteRegisteredProduct(idToDelete, JWT_Token, handleCloseDeleteModal);
+  }
 
   // Close dialog modal
   const handleCloseModal = () => {
@@ -220,6 +241,7 @@ const ConsultRegisteredProducts = () => {
                     <Button
                       size={'sm'}
                       className="bg-red-400 hover:bg-red-500 text-black"
+                      onClick={handleDeleteClick(product.product_id)}
                     >
                       <Trash className="w-4 h-4" />
                       Remover
@@ -327,6 +349,38 @@ const ConsultRegisteredProducts = () => {
             </DialogContent>
           </Dialog>
         ) : null}
+        
+        {/* updated Toast */}
+        { wasUpdated ? (
+          <SuccessToast message={"Produto atualizado com sucesso"} onClose={null} />
+        ) : (null) }
+
+        { isShowingDeleteModal ? (
+                  <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                          <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                              Excluir Item
+                          </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                          <AlertDialogHeader>
+                              <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                  Essa ação é irreversível. Isso irá deletar permanentemente o item do sistema.
+                              </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <button
+                                  onClick={onDeleteConfirm()}
+                                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                              >
+                                  Deletar
+                              </button>
+                          </AlertDialogFooter>
+                      </AlertDialogContent>
+                  </AlertDialog>
+        ) : (null) }
       </article>
     </section>
   );
