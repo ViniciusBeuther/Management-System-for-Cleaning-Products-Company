@@ -102,30 +102,49 @@ exports.updateRegisteredItem = async(req, res) => {
       return res.status(400).send('Request must include the updated product_name and product_price, price must be positive.');
     }
 
-    if (product_description !== '' && product_description !== null) {
+    if (product_description !== undefined && product_description !== null) {
+      // Check if there's a record in description database with the product_id provided
       const [existsInDb] = await pool.query(
       'SELECT COUNT(1) AS count FROM Product_Description WHERE product_id = ?;',
       [product_id]
       );
 
-      if (existsInDb[0].count > 0) {
-      await pool.query(
-        'UPDATE Product_Description SET product_description = ? WHERE product_id = ?;',
-        [product_description, product_id]
-      );
+      console.log(`existsInDb = ${existsInDb[0].count}`)
+
+      if (product_description.trim() == '') {
+        // User removed description but the item exists in db
+        if (existsInDb[0].count > 0) {
+          await pool.query(
+            'DELETE FROM Product_Description WHERE product_id = ?;',
+            [product_id]
+          );
+        }
       } else {
-      await pool.query(
-        'INSERT INTO Product_Description (product_id, product_description) VALUES (?, ?);',
-        [product_id, product_description]
+        // Handling item if it doesn't registered yet in the description db
+        // Update the currently product description
+        if (existsInDb[0].count > 0) {
+        await pool.query(
+          'UPDATE Product_Description SET product_description = ? WHERE product_id = ?;',
+          [product_description, product_id]
+        );
+        } 
+        // create one description if it doesn't exist yet
+        else {
+        await pool.query(
+          'INSERT INTO Product_Description (product_id, product_description) VALUES (?, ?);',
+          [product_id, product_description]
+        );
+        }
+      }
+  
+      // Updated the product table with the latest info provided
+      const [result] = await pool.query(
+        'UPDATE Product SET product_name = ?, product_price = ? WHERE product_id = ?;',
+        [product_name, price, product_id]
       );
       }
-    }
 
-    const [result] = await pool.query(
-      'UPDATE Product SET product_name = ?, product_price = ? WHERE product_id = ?;',
-      [product_name, price, product_id]
-    );
-
+    
     return(res.status(202).json({message: "Success, product updated.", success: true}));
 
   } catch( error ){
@@ -133,3 +152,22 @@ exports.updateRegisteredItem = async(req, res) => {
     return(res.status(500).json({message: "An error occurred updating the product.", success: false}));
   }
 }
+
+exports.deleteRegisteredItem = async (req, res) => {
+  try{
+    const { product_id } = req.body;
+    
+    await pool.query(
+      'DELETE FROM Product_Description WHERE product_id = ?;', [product_id]
+    );
+    
+    await pool.query(
+      'DELETE FROM Product WHERE product_id = ?;', [product_id]
+    );
+
+    return res.status(202).json({message: "Success, product deleted.", success: true});
+  } catch( error ) {
+    console.log(`Error deleting product: ${error}`);
+    return res.status(500).json({message: `An error occurred deleting the product: ${error}`, success: false});
+  }
+};

@@ -7,6 +7,7 @@ router.post('/register', stockController.register);
 router.get('/current_stock', authMiddleware, stockController.getCurrentStock);
 router.get('/listRegisteredProducts', authMiddleware, stockController.listRegisteredProducts);
 router.post('/updateRegisteredItem', authMiddleware, stockController.updateRegisteredItem);
+router.post('/deleteRegisteredItem', authMiddleware, stockController.deleteRegisteredItem);
 //router.post('/register', stockController.register);
 
 module.exports = router;
