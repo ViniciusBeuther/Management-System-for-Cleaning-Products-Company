@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,10 +36,11 @@ const ConsultRegisteredProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const itemsPerPage = 8;
+  const [refreshPage, setRefreshPage] = useState(0);
   const [wasUpdated, setWasUpdated] = useState(false);
   const [wasRemoved, setWasRemoved] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
-  const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE);
+  const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE, refreshPage);
   const [isShowingDeleteModal, setIsShowingDeleteModal] = useState(false);
   const [errors, setErrors] = useState({
     product_name: false,
@@ -73,14 +75,14 @@ const ConsultRegisteredProducts = () => {
     if( temp ){
       setTimeout(() => setWasUpdated(false), 1000 * 8);
     }
-
+    setRefreshPage(prev => prev + 1);
     // setWasUpdated(temp);
   };
 
   // Function used to validate updated input values before pass it thru the API 
   const validateUpdatedInputs = (updatedProductObj) => {
     const { product_name, product_description, product_price } = updatedProductObj;
-    const regexPatternAmount = /^R\$ +([0-9]+\.[0-9]+$)/;
+    const regexPatternAmount = /^R?\$?\s*\d+(,\d{2}|\.\d{2})?$/;
     const regexPatternProductName = /^[A-Za-z]+.*/;
     const regexPatternDescription = /(^[A-Za-z].*)|^$/;
     console.log(`object being passed to http: ${updatedProductObj}`);
@@ -241,7 +243,7 @@ const ConsultRegisteredProducts = () => {
                     <Button
                       size={'sm'}
                       className="bg-red-400 hover:bg-red-500 text-black"
-                      onClick={handleDeleteClick(product.product_id)}
+                      onClick={() => handleDeleteClick(product.product_id)}
                     >
                       <Trash className="w-4 h-4" />
                       Remover
@@ -350,36 +352,20 @@ const ConsultRegisteredProducts = () => {
           </Dialog>
         ) : null}
         
+        {isShowingDeleteModal ? (
+          <Dialog open={isShowingDeleteModal} onOpenChange={(open) => !open && handleCloseDeleteModal()} size={"lg"}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Tem certeza que deseja excluir este item?</DialogTitle>
+              </DialogHeader>
+              <p>Quer deletar esse item?</p>
+            </DialogContent>
+          </Dialog>
+        ) : null}
+
         {/* updated Toast */}
         { wasUpdated ? (
           <SuccessToast message={"Produto atualizado com sucesso"} onClose={null} />
-        ) : (null) }
-
-        { isShowingDeleteModal ? (
-                  <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                          <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
-                              Excluir Item
-                          </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                          <AlertDialogHeader>
-                              <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                  Essa ação é irreversível. Isso irá deletar permanentemente o item do sistema.
-                              </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <button
-                                  onClick={onDeleteConfirm()}
-                                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                              >
-                                  Deletar
-                              </button>
-                          </AlertDialogFooter>
-                      </AlertDialogContent>
-                  </AlertDialog>
         ) : (null) }
       </article>
     </section>

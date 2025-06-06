@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useGetFetch = (API_EndPoint) => {
+const useGetFetch = (API_EndPoint, dependencies = null) => {
   const [data, setData] = useState();
   const JWT_TOKEN = localStorage.getItem('token');
   
@@ -20,7 +20,7 @@ const useGetFetch = (API_EndPoint) => {
         };
 
         fetchData();
-  }, [API_EndPoint]);
+  }, [API_EndPoint, dependencies]);
 
   return data;
 };
