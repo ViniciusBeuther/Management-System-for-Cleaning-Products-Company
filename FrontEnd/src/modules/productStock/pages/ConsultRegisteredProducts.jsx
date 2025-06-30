@@ -1,4 +1,5 @@
 import HeaderComponent from "@/components/global/Header";
+import ErrorToast from "@/components/Toast/ErrorToast";
 import SuccessToast from "@/components/Toast/SuccessToast";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +40,8 @@ const ConsultRegisteredProducts = () => {
   const [refreshPage, setRefreshPage] = useState(0);
   const [wasUpdated, setWasUpdated] = useState(false);
   const [wasRemoved, setWasRemoved] = useState(false);
+  const [wasNotRemoved, setWasNotRemoved] = useState(false);
+  const [wasNotUpdated, setWasNotUpdated] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
   const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE, refreshPage);
   const [isShowingDeleteModal, setIsShowingDeleteModal] = useState(false);
@@ -77,9 +80,13 @@ const ConsultRegisteredProducts = () => {
     const JWT_TOKEN = localStorage.getItem('token');
     let temp = await updateRegisteredProduct(updatedProductObj, JWT_TOKEN, handleCloseModal);
     setTimeout(() => setWasUpdated(true), 1000 * 2);
+    
     // If was updated successfully, shows the toast
     if( temp ){
       setTimeout(() => setWasUpdated(false), 1000 * 8);
+    } else {
+      setWasNotUpdated(true);
+      setTimeout(() => setWasNotUpdated(false), 1000 * 8);
     }
     setRefreshPage(prev => prev + 1);
     // setWasUpdated(temp);
@@ -169,10 +176,14 @@ const ConsultRegisteredProducts = () => {
       let temp = await deleteRegisteredProduct({ product_id: idToDelete }, JWT_Token, handleCloseDeleteModal);
 
       if(temp){
-        alert("Produto removido com sucesso.")
+        // alert("Produto removido com sucesso.")
         setRefreshPage(prev => prev + 1);
+        setWasRemoved(true);
+        setTimeout(() => setWasRemoved(false), 1000 * 5);
       } else {
         alert("houve um erro, tente novamente")
+        setWasNotRemoved(true);
+        setTimeout(() => setWasNotRemoved(false), 1000 * 5);
       }
 
     } catch( error ){
@@ -378,11 +389,12 @@ const ConsultRegisteredProducts = () => {
               <DialogHeader>
                 <DialogTitle>Tem certeza que deseja excluir este item?</DialogTitle>
               </DialogHeader>
-              <p>Quer deletar esse item? Essa ação não pode ser desfeita.</p>
-              <section>
+              <p>Quer deletar esse item? <strong>Essa ação não pode ser desfeita.</strong></p>
+              <section className="flex justify-end gap-3 mt-5">
                 <Button>Cancelar</Button>
                 <Button
                   onClick={() => onDeleteConfirm()}
+                  className="bg-red-500 hover:bg-red-600 text-white"
                 >Apagar</Button>
 
               </section>
@@ -393,6 +405,21 @@ const ConsultRegisteredProducts = () => {
         {/* updated Toast */}
         { wasUpdated ? (
           <SuccessToast message={"Produto atualizado com sucesso"} onClose={null} />
+        ) : (null) }
+
+        {/* removed Toast */}
+        { wasRemoved ? (
+          <SuccessToast message={"Produto removido com sucesso"} onClose={null} />
+        ) : (null) }
+
+        {/* not removed Toast */}
+        { wasNotRemoved ? (
+          <ErrorToast message={"Houve um erro ao remover o produto"} onClose={null} />
+        ) : (null) }
+
+        {/* not updated Toast */}
+        { wasNotUpdated ? (
+          <ErrorToast message={"Houve um erro ao atualizar o produto"} onClose={null} />
         ) : (null) }
       </article>
     </section>

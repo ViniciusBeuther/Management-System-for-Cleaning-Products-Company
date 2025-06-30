@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-const SuccessToast = ({ message, onClose }) => {
+const SuccessToast = ({ message }) => {
 
   return (
     <article className="fixed bottom-4 right-4 z-50">
