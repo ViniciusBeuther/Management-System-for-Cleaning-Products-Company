@@ -23,7 +23,15 @@ export const updateRegisteredProduct = async (updatedProductObj, token, handleCl
       }
 };
 
-export const deleteRegisteredProduct = async ( product_id, token, handleCloseModal ) => {
+/**
+ * 
+ * @param { product_id } productObject : product to be deleted
+ * @param { JWT } token  : JWT token for authentication
+ * @param { function } handleCloseModal : function to close modal
+ * @returns { boolean } : true in success cases other than that returns false
+ */
+
+export const deleteRegisteredProduct = async ( productObject, token, handleCloseModal ) => {
   try{
     const response = await fetch(API_URL + API_DELETE_REGISTERED_PRODUCT_ROUTE, {
       method: 'POST',
@@ -31,8 +39,9 @@ export const deleteRegisteredProduct = async ( product_id, token, handleCloseMod
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(product_id)
+      body: JSON.stringify(productObject)
     });
+
 
     response.ok ? (handleCloseModal()) : (null);
 

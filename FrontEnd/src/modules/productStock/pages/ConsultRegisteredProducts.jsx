@@ -52,6 +52,12 @@ const ConsultRegisteredProducts = () => {
     product_price: '',
     product_description: ''
   });
+  const hasToken = localStorage.getItem('token') !== null;
+  // If there is no token, redirect to login page
+  if (!hasToken) {
+    window.location.href = '/';
+    return null;
+  }
 
   // set the page to 1 when search bar is changed
   useEffect(() => {
@@ -158,7 +164,21 @@ const ConsultRegisteredProducts = () => {
 
   const onDeleteConfirm = async () => {
     const JWT_Token = localStorage.getItem('token');
-    const temp = await deleteRegisteredProduct(idToDelete, JWT_Token, handleCloseDeleteModal);
+    try{
+      //console.log(`JSON: ${JSON.stringify(requestObject)}`)
+      let temp = await deleteRegisteredProduct({ product_id: idToDelete }, JWT_Token, handleCloseDeleteModal);
+
+      if(temp){
+        alert("Produto removido com sucesso.")
+        setRefreshPage(prev => prev + 1);
+      } else {
+        alert("houve um erro, tente novamente")
+      }
+
+    } catch( error ){
+      console.log("Error on delete: message of error: ", error);
+    }
+
   }
 
   // Close dialog modal
@@ -358,7 +378,14 @@ const ConsultRegisteredProducts = () => {
               <DialogHeader>
                 <DialogTitle>Tem certeza que deseja excluir este item?</DialogTitle>
               </DialogHeader>
-              <p>Quer deletar esse item?</p>
+              <p>Quer deletar esse item? Essa ação não pode ser desfeita.</p>
+              <section>
+                <Button>Cancelar</Button>
+                <Button
+                  onClick={() => onDeleteConfirm()}
+                >Apagar</Button>
+
+              </section>
             </DialogContent>
           </Dialog>
         ) : null}
@@ -369,6 +396,7 @@ const ConsultRegisteredProducts = () => {
         ) : (null) }
       </article>
     </section>
+
   );
 };
 
