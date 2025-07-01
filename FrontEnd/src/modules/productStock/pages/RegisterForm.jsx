@@ -15,12 +15,13 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { API_PRODUCT_REGISTER_ROUTE, API_URL } from "@/utils/api/apiVariables";
 import SuccessAlert from "@/components/Alerts/SuccessAlert";
 import ErrorAlert from "@/components/Alerts/ErrorAlert";
 
-const RegisterForm = () => {
+
+const RegisterForm = ( { onClose, setRefreshPage }) => {
   const API_register_endpoint = API_URL + API_PRODUCT_REGISTER_ROUTE;
 
   const [product_name, setProductName] = useState("");
@@ -97,7 +98,8 @@ const RegisterForm = () => {
 
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 1000 * 5);
-
+      onClose();
+      setRefreshPage(1);
       return responseData;
 
     } catch( error ){
@@ -108,9 +110,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <section className="bg-gray-50 h-full">
-      <HeaderComponent />
-      <h2 className="text-center">Cadastrar novo produto</h2>
+    <section className="h-full">
       <form
         className="flex items-center justify-center flex-col gap-2"
         onSubmit={handleSubmit(onSubmit)}
@@ -166,10 +166,6 @@ const RegisterForm = () => {
 
         {/* Buttons handling */}
         <div className="flex items-center justify-center gap-2 mt-5">
-          <Button className="bg-blue-400 hover:bg-blue-500 text-black">
-            <Link to={"/home"}>Voltar</Link>
-          </Button>
-
           <Button
             type="submit"
             className="bg-green-400 hover:bg-green-500 text-black"
@@ -203,6 +199,7 @@ const RegisterForm = () => {
                 onClick={() => {
                   resetStates();
                   setCancelDialogIsOpen(false);
+                  onClose();
                 }}
                 className="bg-green-400 hover:bg-green-500 text-black"
               >

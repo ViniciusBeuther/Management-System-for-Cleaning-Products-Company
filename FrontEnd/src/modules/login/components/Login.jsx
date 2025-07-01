@@ -6,6 +6,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [hasError, setHasError] = useState(false);
 
+  window.addEventListener('enter', (event) => {
+    if (event.key === 'Enter') {
+      handleClick();
+    }
+  });
+
   const handleClick =  () => {
     const loginClass = new LoginClass();
     if( loginClass.logIn(user, password) ){

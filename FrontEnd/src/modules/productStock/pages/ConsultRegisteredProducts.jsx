@@ -2,6 +2,7 @@ import HeaderComponent from "@/components/global/Header";
 import ErrorToast from "@/components/Toast/ErrorToast";
 import SuccessToast from "@/components/Toast/SuccessToast";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -25,15 +26,19 @@ import {
   API_REGISTERED_PRODUCT_GET_ROUTE,
   API_URL,
 } from "@/utils/api/apiVariables";
-import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Trash } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Plus, Trash } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import RegisterForm from "./RegisterForm";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 const ConsultRegisteredProducts = () => {
   /* Variables Initialization */
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [modalIsOpened, setModalIsOpened] = useState(false);
+  const [isShowingDeleteModal, setIsShowingDeleteModal] = useState(false);
+  const [isShowingRegisterModal, setIsShowingRegisterModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const itemsPerPage = 8;
@@ -44,7 +49,6 @@ const ConsultRegisteredProducts = () => {
   const [wasNotUpdated, setWasNotUpdated] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
   const hookData = useGetFetch(API_URL + API_REGISTERED_PRODUCT_GET_ROUTE, refreshPage);
-  const [isShowingDeleteModal, setIsShowingDeleteModal] = useState(false);
   const [errors, setErrors] = useState({
     product_name: false,
     product_price: false,
@@ -55,12 +59,6 @@ const ConsultRegisteredProducts = () => {
     product_price: '',
     product_description: ''
   });
-  const hasToken = localStorage.getItem('token') !== null;
-  // If there is no token, redirect to login page
-  if (!hasToken) {
-    window.location.href = '/';
-    return null;
-  }
 
   // set the page to 1 when search bar is changed
   useEffect(() => {
@@ -221,7 +219,16 @@ const ConsultRegisteredProducts = () => {
           />
         </section>
         <section>
-          <h2>Consulta de Produtos</h2>
+          <article className="flex justify-between items-center mb-3">
+            <h2>Consulta de Produtos</h2>
+            <Button
+              className="bg-successBtn hover:bg-successBtnHover text-black"
+              onClick={() => setIsShowingRegisterModal(true)}
+              >Cadastrar Item
+              <Plus className="w-4 h-4 ml-1" />
+              </Button>
+
+          </article>
           <p>
             Faça consultas, alterações e remoção nos produtos cadastrados no seu
             inventário.
@@ -232,7 +239,7 @@ const ConsultRegisteredProducts = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[10%] text-black font-bold">
-                  ID do produto
+                  ID
                 </TableHead>
                 <TableHead className="w-[30%] text-black font-bold">
                   Produto
@@ -391,7 +398,9 @@ const ConsultRegisteredProducts = () => {
               </DialogHeader>
               <p>Quer deletar esse item? <strong>Essa ação não pode ser desfeita.</strong></p>
               <section className="flex justify-end gap-3 mt-5">
-                <Button>Cancelar</Button>
+                <Button
+                  onClick={() => handleCloseDeleteModal()}
+                  >Cancelar</Button>
                 <Button
                   onClick={() => onDeleteConfirm()}
                   className="bg-red-500 hover:bg-red-600 text-white"
@@ -401,6 +410,23 @@ const ConsultRegisteredProducts = () => {
             </DialogContent>
           </Dialog>
         ) : null}
+
+
+        {/* Register new product modal */}
+        {isShowingRegisterModal ? (
+          <Dialog open={isShowingRegisterModal} onOpenChange={(open) => !open && setIsShowingRegisterModal(false)} size={"lg"}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Adicionar Novo Produto</DialogTitle>
+              </DialogHeader>
+              <RegisterForm
+                onClose={() => setIsShowingRegisterModal(false)}
+                setRefreshPage={setRefreshPage}
+              />
+            </DialogContent>
+          </Dialog>
+        ) : null}
+
 
         {/* updated Toast */}
         { wasUpdated ? (
